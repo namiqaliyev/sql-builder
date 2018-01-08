@@ -16,7 +16,7 @@
 
 <body>
     <div class="container">
-        <ul class="nav nav-tabs nav-justified">
+        <ul class="nav nav-tabs nav-justified" style="margin-top: 30px;">
             <li class="active">
                 <a data-toggle="tab" href="#sectionA">Design Table</a>
             </li>
@@ -43,13 +43,16 @@
                                 <input id="txtTableName" type="text" class="form-control" />
                             </div>
                         </div>
+                        <div class="pull-right">
+                                <a href="#" id="btnToolbarNewColumn" data-toggle="modal" data-target="#modalAddColumn" title="Add New Column" class="btn btn-default toolbar"><i class="glyphicon glyphicon-plus"></i></a>
+                                <a href="#" id="btnToolbarNewTable" data-toggle="modal" data-target="#modalAddColumn" title="Add New Column" class="btn btn-default toolbar"><i class="glyphicon glyphicon-plus"></i></a>
+                        </div>
                     </div>
                     <!-- <hr/> -->
                     <div class="col-md-12">
-                        <a href="#" data-toggle="modal" data-target="#myModal">New Column</a>
-                        <table class="table">
+                        <table id="tblColumns" class="table">
                             <thead>
-                                <tr>
+                                <tr class="success">
                                     <th>No</th>
                                     <th>Column Name</th>
                                     <th>Column Type</th>
@@ -57,9 +60,36 @@
                                     <th>Allow Null</th>
                                     <th>Autoincrement</th>
                                     <th>Is Primary</th>
+                                    <th></th>
                                 </tr>
                             </thead>
-                            <tbody></tbody>
+                            <tbody>
+                                <tr>
+                                    <td>1</td>
+                                    <td>Id</td>
+                                    <td>INT</td>
+                                    <td>10</td>
+                                    <td>
+                                        <input type="checkbox" disabled/>
+                                    </td>
+                                    <td>
+                                        <input type="checkbox" checked disabled/>
+                                    </td>
+                                    <td>
+                                        <input type="checkbox" checked disabled/>
+                                    </td>
+                                    <td>
+                                        <div class="pull-right">
+                                            <a href="#" class="btn btn-xs btn-info" title="Edit Column">
+                                                <i class="glyphicon glyphicon-edit"></i>
+                                            </a>
+                                            <a href="#" class="btn btn-xs btn-danger" title="Remove Column">
+                                                <i class="glyphicon glyphicon-remove"></i>
+                                            </a>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
                         </table>
                     </div>
                 </div>
@@ -71,27 +101,116 @@
         </div>
     </div>
 
-    <div>
-        <div id="myModal" class="modal fade" role="dialog">
+    <div id="modal-zone">
+        <div id="modalAddColumn" class="modal fade" role="dialog">
             <div class="modal-dialog">
 
                 <!-- Modal content-->
                 <div class="modal-content">
                     <div class="modal-header">
                         <button type="button" class="close" data-dismiss="modal">&times;</button>
-                        <h4 class="modal-title">Modal Header</h4>
+                        <h4 class="modal-title">Add New Column</h4>
                     </div>
                     <div class="modal-body">
-                        <p>Some text in the modal.</p>
+                        <div class="form-horizontal">
+                            <div class="form-group">
+                                <label for="" class="control-label col-md-3">
+                                    Column name
+                                </label>
+                                <div class="col-md-9">
+                                    <input id="txtColumnName" placeholder="Enter column name" type="text" class="form-control" />
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="" class="control-label col-md-3">
+                                    Column type
+                                </label>
+                                <div class="col-md-5">
+                                    <select id="selColumnType" class="form-control">
+                                        <option value="">--Select--</option>
+                                        <option value="BIGINT">BIGINT</option>
+                                        <option value="BIT">BIT</option>
+                                        <option value="CHAR">CHAR</option>
+                                        <option value="DATE">DATE</option>
+                                        <option value="DATETIME">DATETIME</option>
+                                        <option value="DATETIME2">DATETIME2</option>
+                                        <option value="DECIMAL">DECIMAL</option>
+                                        <option value="FLOAT">FLOAT</option>
+                                        <option value="INT">INT</option>
+                                        <option value="NVARCHAR">NVARCHAR</option>
+                                        <option value="TEXT">TEXT</option>
+                                        <option value="VARCHAR">VARCHAR</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-4">
+                                    <input id="txtLength" placeholder="Enter length" type="text" class="form-control" />
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <div class="checkbox col-md-9 col-md-offset-3">
+                                    <label class="checkbox-inline" for="chbAllowNull">
+                                        <input type="checkbox" id="chbAllowNull" />Allow NULL
+                                    </label>
+                                    <label class="checkbox-inline" for="chbIsPrimary">
+                                        <input type="checkbox" id="chbIsPrimary" />Is Primary
+                                    </label>
+                                    <label class="checkbox-inline" for="chbAutoIncrement">
+                                        <input type="checkbox" id="chbAutoIncrement" />Auto Increment
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                        <button id="btnModalAddColumn" type="button" class="btn btn-primary">Add Column</button>
                     </div>
                 </div>
 
             </div>
         </div>
     </div>
+
+    <script src="script.js"></script>
+    <script>
+        $(document).on("click", "#btnModalAddColumn", function (event) {
+            event.preventDefault();
+            let target = $("table#tblColumns tbody");
+            let colName = $("#txtColumnName").val(),
+                colType = $("#selColumnType option:selected").val(),
+                colLength = $("#txtLength").val(),
+                isAllowNull = $("#chbAllowNull").is(":checked"),
+                isPrimary = $("#chbIsPrimary").is(":checked"),
+                isAutoIncrement = $("#chbAutoIncrement").is(":checked");
+            let trCount = target.find("tr").length;
+            let tr = "<tr>";
+            tr += "<td>" + (trCount + 1) + "</td>";
+            tr += "<td>" + colName + "</td>";
+            tr += "<td>" + colType + "</td>";
+            tr += "<td>" + colLength + "</td>";
+            tr += "<td><input type='checkbox' disabled " + (isAllowNull ? "checked" : "") + "></td>";
+            tr += "<td><input type='checkbox' disabled " + (isAutoIncrement ? "checked" : "") + "></td>";
+            tr += "<td><input type='checkbox' disabled " + (isPrimary ? "checked" : "") + "></td>";
+            tr += "<td><div class='pull-right'>";
+            tr +=
+                "<a href='#' class='btn btn-xs btn-info' title='Edit Column'><i class='glyphicon glyphicon-edit'></i></a>&nbsp;";
+            tr +=
+                "<a href='#' class='btn btn-xs btn-danger' title='Remove Column'><i class='glyphicon glyphicon-remove'></i></a>";
+            tr += "</div></td>";
+            tr += "</tr>";
+
+            if(colName == "") {
+                alert("Enter Column Name");
+                return;
+            }
+            if(colType == "") {
+                alert("Enter Column Type");
+                return;
+            }
+
+            target.append(tr);
+            $("#modalAddColumn").modal("hide");
+        });
+    </script>
 </body>
 
 </html>
